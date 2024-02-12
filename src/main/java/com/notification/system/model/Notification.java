@@ -10,6 +10,8 @@ import java.util.List;
 
 @Data
 public class Notification {
+    @NotBlank(message="Notification subject cannot be empty")
+    private String subject;
     @NotBlank(message="Notification content cannot be empty")
     private String content;
     @NotEmpty(message="Notification must have recipients")
