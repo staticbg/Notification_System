@@ -10,7 +10,6 @@ import com.notification.system.model.MessageStatus;
 import com.notification.system.model.Notification;
 import com.notification.system.persistence.MessageRepository;
 import com.notification.system.persistence.NotificationRepository;
-import jakarta.persistence.criteria.Path;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Persistent;
@@ -32,7 +31,6 @@ public class PersistenceService {
 
     /**
      * Saves Notification entity
-     * @param notification
      */
     public void save(Notification notification) {
         notificationRepository.save(notification);
@@ -40,7 +38,6 @@ public class PersistenceService {
 
     /**
      * Saves Message entity
-     * @param message
      */
     public void save(Message message) {
         messageRepository.save(message);

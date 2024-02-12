@@ -9,6 +9,7 @@ import com.notification.system.channel.Channel;
 import com.notification.system.model.Message;
 import com.notification.system.model.MessageStatus;
 import com.notification.system.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class NotificationSendingService {
     private final Map<String, Channel> notificationChannels;
     private final PersistenceService persistenceService;
@@ -45,8 +47,10 @@ public class NotificationSendingService {
      * Sends notification message by the message id
      */
     public void sendMessage(UUID messageId) {
+        log.info("Starting message sending for message {}", messageId);
         Optional<Message> messageResult = persistenceService.getMessageById(messageId);
         if (messageResult.isEmpty()) {
+            log.warn("Message with id {} not found in the DB", messageId);
             return;
         }
         Message message = messageResult.get();
@@ -55,7 +59,9 @@ public class NotificationSendingService {
             message.setStatus(MessageStatus.SENT);
             message.setSentTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
             persistenceService.save(message);
+            log.info("Message {} sent successfully", messageId);
         } catch (Exception e) {
+            log.error("Message sending for message {} failed. Setting status to FAILED.", messageId);
             message.setStatus(MessageStatus.FAILED);
             persistenceService.save(message);
         }

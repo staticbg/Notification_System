@@ -6,6 +6,7 @@ package com.notification.system.channel;
 import com.notification.system.model.Message;
 import com.notification.system.utils.Constants;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.jsmpp.bean.Alphabet;
 import org.jsmpp.bean.BindType;
@@ -23,6 +24,7 @@ import java.io.IOException;
 
 @Service
 @Getter
+@Slf4j
 public class SMSChannel implements Channel {
     private final String name = "SMS";
 
@@ -34,6 +36,7 @@ public class SMSChannel implements Channel {
         // The code is written to use against the smpp.org SMSC simulator
         // In production environment it would be configured to use actual SMPP server
 
+        log.info("Sending notification for message {} via SMS channel", message.getId());
         SMPPSession session = new SMPPSession();
         try {
             session.connectAndBind(
@@ -70,12 +73,15 @@ public class SMSChannel implements Channel {
                         (byte) 0,
                         (message.getSubject() + "\n\n" + message.getContent()).getBytes()
                 );
+                log.info("Successfully sent notification for message {} via SMS channel", message.getId());
             } catch (Exception e) {
+                log.error("SMS channel error for message {}: {}", message.getId(), e.getMessage());
                 throw new Exception("SMS channel error: " + e.getMessage());
             }
 
             session.unbindAndClose();
         } catch (IOException e) {
+            log.error("SMS channel error for message {}: {}", message.getId(), e.getMessage());
             throw new Exception("SMS channel error: " + e.getMessage());
         }
     }

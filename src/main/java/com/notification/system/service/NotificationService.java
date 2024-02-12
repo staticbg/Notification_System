@@ -10,6 +10,7 @@ import com.notification.system.model.MessageStatus;
 import com.notification.system.model.Notification;
 import com.notification.system.model.NotificationRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
     private final PersistenceService persistenceService;
@@ -31,6 +33,7 @@ public class NotificationService {
     public void createNotification(NotificationRequest notificationRequest) {
         // Validation that notificationChannel exists is done in the NotificationController
         // thus here should be guaranteed that the notificationChannel exists
+        log.info("Creating new notification and messages");
         List<Message> messages = new ArrayList<>();
         for (String recipient: notificationRequest.getRecipients()) {
             Message message = new Message();
