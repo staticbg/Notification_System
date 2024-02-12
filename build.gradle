@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
     implementation 'org.jsmpp:jsmpp:3.0.1'
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2'
+    implementation 'com.github.seratch:jslack:3.4.2'
+
 }
 
 tasks.named('test') {

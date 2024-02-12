@@ -1,5 +1,7 @@
 package com.notification.system.channel;
 
+import com.github.seratch.jslack.Slack;
+import com.github.seratch.jslack.api.webhook.Payload;
 import com.notification.system.model.Notification;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -12,12 +14,16 @@ public class SlackChannel implements Channel {
 
     @Override
     public void sendNotification(Notification notification) throws Exception {
+        Payload payload = Payload.builder()
+            .text(notification.getSubject() + "\n" + notification.getContent())
+            .build();
         try {
-            // TODO: Implement Slack sending logic here
-            System.out.println("Slack Channel sendNotification() called");
+            for (String slackWebhookUrl: notification.getRecipients()) {
+                Slack.getInstance().send(slackWebhookUrl, payload);
+            }
         } catch (Exception e) {
-            throw new Exception("Email channel error: " + e.getMessage());
+            throw new Exception("SLACK channel error: " + e.getMessage());
         }
-
     }
+
 }

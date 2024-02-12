@@ -25,7 +25,7 @@ public class EmailChannel implements Channel {
         try {
             sendEmailNotification(notification);
         } catch (Exception e) {
-            throw new Exception("Email channel error: " + e.getMessage());
+            throw new Exception("EMAIL channel error: " + e.getMessage());
         }
     }
 
