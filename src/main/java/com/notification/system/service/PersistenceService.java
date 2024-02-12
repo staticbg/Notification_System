@@ -6,11 +6,7 @@ import com.notification.system.model.MessageStatus;
 import com.notification.system.model.Notification;
 import com.notification.system.persistence.MessageRepository;
 import com.notification.system.persistence.NotificationRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Persistent;
@@ -18,17 +14,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @Persistent
 @RequiredArgsConstructor
+@Transactional
 public class PersistenceService {
 
     private final NotificationRepository notificationRepository;
     private final MessageRepository messageRepository;
 
-    @Transactional
     public void save(Notification notification) {
         notificationRepository.save(notification);
     }
@@ -49,6 +46,10 @@ public class PersistenceService {
         return messageRepository.findAll(specification);
     }
 
+    public Optional<Message> getMessageById(UUID messageId) {
+        return messageRepository.findById(messageId);
+    }
+
     public List<Message> getMessagesByIds(List<UUID> messageIds) {
         Specification<Message> specification = (root, query, builder) -> {
             final Path<UUID> group = root.get("id");
@@ -58,7 +59,6 @@ public class PersistenceService {
         return messageRepository.findAll(specification);
     }
 
-    @Transactional
     public void updateMessageStatus(Message message, MessageStatus messageStatus) {
         message.setStatus(messageStatus);
         messageRepository.save(message);

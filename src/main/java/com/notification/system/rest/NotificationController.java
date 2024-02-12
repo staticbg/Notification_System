@@ -2,6 +2,7 @@ package com.notification.system.rest;
 
 import com.notification.system.model.Message;
 import com.notification.system.model.NotificationRequest;
+import com.notification.system.service.NotificationSendingService;
 import com.notification.system.service.NotificationService;
 import com.notification.system.utils.Constants;
 
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
+    private final NotificationSendingService notificationSendingService;
 
     @PostMapping(path = "/notification", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, List<String>>> createNotification(@Valid @RequestBody NotificationRequest notificationRequest, Errors errors) {
@@ -61,6 +63,11 @@ public class NotificationController {
     @GetMapping(path = "/messages/unprocessed", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Message> getUnprocessedMessages() {
         return notificationService.getUnprocessedMessages();
+    }
+
+    @PostMapping(path = "/triggerNotificationSending", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void triggerNotificationSending() {
+        notificationSendingService.triggerNotificationSending();
     }
 
 }
