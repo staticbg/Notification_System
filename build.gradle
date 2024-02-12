@@ -28,7 +28,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.2'
-
+    implementation 'org.jsmpp:jsmpp:3.0.1'
 }
 
 tasks.named('test') {

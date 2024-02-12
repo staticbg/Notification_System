@@ -23,10 +23,8 @@ public class NotificationService {
     }
 
     public void sendNotification(Notification notification) {
-        for (String notificationChannel: notification.getChannels()) {
-            // Validation that notificationChannel exists is done in the NotificationController
-            // thus here should be guaranteed that the notificationChannel exists
-            notificationChannels.get(notificationChannel.toUpperCase()).sendNotification(notification);
-        }
+        // Validation that notificationChannel exists is done in the NotificationController
+        // thus here should be guaranteed that the notificationChannel exists
+        notificationChannels.get(notification.getChannel().toUpperCase()).sendNotification(notification);
     }
 }
