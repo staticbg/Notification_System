@@ -28,7 +28,10 @@ public class SMSChannel implements Channel {
     private final String name = "SMS";
 
     @Override
-    public boolean sendNotification(Notification notification) {
+    public void sendNotification(Notification notification) throws Exception {
+        // The code is written to use against the smpp.org SMSC simulator
+        // In production environment it would be configured to use actual SMPP server
+
         SMPPSession session = new SMPPSession();
         try {
             session.connectAndBind(
@@ -66,24 +69,15 @@ public class SMSChannel implements Channel {
                             (byte) 0,
                             (notification.getSubject() + "\n\n" + notification.getContent()).getBytes()
                     );
-                } catch (PDUException e) {
-                    System.out.println("Invalid PDU Parameter");
-                } catch (ResponseTimeoutException e) {
-                    System.out.println("Response Timeout");
-                } catch (InvalidResponseException e) {
-                    System.out.println("Invalid Response");
-                } catch (NegativeResponseException e) {
-                    System.out.println("Received negative response (non-zero command_status)");
-                } catch (IOException e) {
-                    System.out.println("IO Exception");
+                } catch (Exception e) {
+                    throw new Exception("SMS channel error: " + e.getMessage());
                 }
             }
 
             session.unbindAndClose();
         } catch (IOException e) {
-            System.out.println("Failed connect and bind to SMSC");
+            throw new Exception("SMS channel error: " + e.getMessage());
         }
-
-        return true;
     }
+
 }

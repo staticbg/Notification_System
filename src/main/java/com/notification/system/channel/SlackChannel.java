@@ -11,9 +11,13 @@ public class SlackChannel implements Channel {
     private final String name = "SLACK";
 
     @Override
-    public boolean sendNotification(Notification notification) {
-        // TODO: Implement Slack sending logic here
-        System.out.println("Slack Channel sendNotification() called");
-        return false;
+    public void sendNotification(Notification notification) throws Exception {
+        try {
+            // TODO: Implement Slack sending logic here
+            System.out.println("Slack Channel sendNotification() called");
+        } catch (Exception e) {
+            throw new Exception("Email channel error: " + e.getMessage());
+        }
+
     }
 }

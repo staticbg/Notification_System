@@ -42,7 +42,14 @@ public class NotificationController {
 
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
-        notificationService.sendNotification(notification);
+
+        try {
+            notificationService.sendNotification(notification);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of(
+                    Constants.INTERNAL_SERVER_ERROR_RESPONSE_KEY, List.of(e.getMessage())
+            ), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

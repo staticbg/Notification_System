@@ -22,7 +22,7 @@ public class NotificationService {
         }
     }
 
-    public void sendNotification(Notification notification) {
+    public void sendNotification(Notification notification) throws Exception {
         // Validation that notificationChannel exists is done in the NotificationController
         // thus here should be guaranteed that the notificationChannel exists
         notificationChannels.get(notification.getChannel().toUpperCase()).sendNotification(notification);

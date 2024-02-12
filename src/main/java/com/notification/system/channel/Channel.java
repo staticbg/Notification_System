@@ -6,5 +6,5 @@ public interface Channel {
 
     String getName();
 
-    boolean sendNotification(Notification notification);
+    void sendNotification(Notification notification) throws Exception;
 }
