@@ -1,11 +1,9 @@
 package com.notification.system.channel;
 
-import com.notification.system.model.Notification;
+import com.notification.system.model.Message;
 import com.notification.system.utils.Constants;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
-import org.jsmpp.InvalidResponseException;
-import org.jsmpp.PDUException;
 import org.jsmpp.bean.Alphabet;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.ESMClass;
@@ -15,8 +13,6 @@ import org.jsmpp.bean.NumberingPlanIndicator;
 import org.jsmpp.bean.RegisteredDelivery;
 import org.jsmpp.bean.SMSCDeliveryReceipt;
 import org.jsmpp.bean.TypeOfNumber;
-import org.jsmpp.extra.NegativeResponseException;
-import org.jsmpp.extra.ResponseTimeoutException;
 import org.jsmpp.session.BindParameter;
 import org.jsmpp.session.SMPPSession;
 
@@ -28,7 +24,7 @@ public class SMSChannel implements Channel {
     private final String name = "SMS";
 
     @Override
-    public void sendNotification(Notification notification) throws Exception {
+    public void sendNotification(Message message) throws Exception {
         // The code is written to use against the smpp.org SMSC simulator
         // In production environment it would be configured to use actual SMPP server
 
@@ -48,30 +44,28 @@ public class SMSChannel implements Channel {
                 )
             );
 
-            for (String recipient : notification.getRecipients()) {
-                try {
-                    session.submitShortMessage(
-                            "",
-                            TypeOfNumber.UNKNOWN,
-                            NumberingPlanIndicator.UNKNOWN,
-                            Constants.NOTIFICATION_SYSTEM_SOURCE_ADDRESS,
-                            TypeOfNumber.INTERNATIONAL,
-                            NumberingPlanIndicator.UNKNOWN,
-                            recipient,
-                            new ESMClass(),
-                            (byte) 0,
-                            (byte) 1,
-                            null,
-                            null,
-                            new RegisteredDelivery(SMSCDeliveryReceipt.DEFAULT),
-                            (byte) 0,
-                            new GeneralDataCoding(Alphabet.ALPHA_DEFAULT, MessageClass.CLASS1, false),
-                            (byte) 0,
-                            (notification.getSubject() + "\n\n" + notification.getContent()).getBytes()
-                    );
-                } catch (Exception e) {
-                    throw new Exception("SMS channel error: " + e.getMessage());
-                }
+            try {
+                session.submitShortMessage(
+                        "",
+                        TypeOfNumber.UNKNOWN,
+                        NumberingPlanIndicator.UNKNOWN,
+                        Constants.NOTIFICATION_SYSTEM_SOURCE_ADDRESS,
+                        TypeOfNumber.INTERNATIONAL,
+                        NumberingPlanIndicator.UNKNOWN,
+                        message.getRecipient(),
+                        new ESMClass(),
+                        (byte) 0,
+                        (byte) 1,
+                        null,
+                        null,
+                        new RegisteredDelivery(SMSCDeliveryReceipt.DEFAULT),
+                        (byte) 0,
+                        new GeneralDataCoding(Alphabet.ALPHA_DEFAULT, MessageClass.CLASS1, false),
+                        (byte) 0,
+                        (message.getSubject() + "\n\n" + message.getContent()).getBytes()
+                );
+            } catch (Exception e) {
+                throw new Exception("SMS channel error: " + e.getMessage());
             }
 
             session.unbindAndClose();

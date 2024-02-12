@@ -1,30 +1,48 @@
 package com.notification.system.service;
 
 
-import com.notification.system.channel.Channel;
+import com.notification.system.model.Message;
+import com.notification.system.model.MessageStatus;
 import com.notification.system.model.Notification;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.notification.system.model.NotificationRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
-    private final Map<String, Channel> notificationChannels;
 
-    @Autowired
-    public NotificationService(List<Channel> channels) {
-        notificationChannels = new HashMap<>();
-        for (Channel channel: channels) {
-            notificationChannels.put(channel.getName(), channel);
-        }
-    }
+    private final PersistenceService persistenceService;
 
-    public void sendNotification(Notification notification) throws Exception {
+    public void sendNotification(NotificationRequest notificationRequest) {
         // Validation that notificationChannel exists is done in the NotificationController
         // thus here should be guaranteed that the notificationChannel exists
-        notificationChannels.get(notification.getChannel().toUpperCase()).sendNotification(notification);
+        List<Message> messages = new ArrayList<>();
+        for (String recipient: notificationRequest.getRecipients()) {
+            Message message = new Message();
+            message.setSubject(notificationRequest.getSubject());
+            message.setContent(notificationRequest.getContent());
+            message.setRecipient(recipient);
+            message.setStatus(MessageStatus.NEW);
+            message.setChannel(notificationRequest.getChannel());
+            messages.add(message);
+        }
+        Notification notification = new Notification();
+        notification.setMessages(messages);
+        persistenceService.save(notification);
     }
+
+    public List<Message> getMessagesForNotification(UUID notificationId) {
+        return persistenceService.getMessagesForNotification(notificationId);
+    }
+
+    public List<Message> getUnprocessedMessages() {
+        return persistenceService.getUnprocessedMessages();
+    }
+
 }

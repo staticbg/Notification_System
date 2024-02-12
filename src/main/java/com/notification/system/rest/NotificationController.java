@@ -1,16 +1,19 @@
 package com.notification.system.rest;
 
-import com.notification.system.model.Notification;
+import com.notification.system.model.Message;
+import com.notification.system.model.NotificationRequest;
 import com.notification.system.service.NotificationService;
 import com.notification.system.utils.Constants;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,19 +22,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 @RestController
+@RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
 
-    public NotificationController(@Autowired NotificationService notificationService) {
-        super();
-        this.notificationService = notificationService;
-    }
-
     @PostMapping(path = "/notification", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, List<String>>> createNotification(@Valid @RequestBody Notification notification, Errors errors) {
+    public ResponseEntity<Map<String, List<String>>> createNotification(@Valid @RequestBody NotificationRequest notificationRequest, Errors errors) {
         if (errors.hasErrors()) {
             List<String> errorMessages = new ArrayList<>();
             for (ObjectError error: errors.getAllErrors()) {
@@ -44,7 +44,7 @@ public class NotificationController {
         }
 
         try {
-            notificationService.sendNotification(notification);
+            notificationService.sendNotification(notificationRequest);
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of(
                     Constants.INTERNAL_SERVER_ERROR_RESPONSE_KEY, List.of(e.getMessage())
@@ -52,4 +52,15 @@ public class NotificationController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping(path = "/messages/{notificationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Message> getMessagesForNotification(@PathVariable UUID notificationId) {
+        return notificationService.getMessagesForNotification(notificationId);
+    }
+
+    @GetMapping(path = "/messages/unprocessed", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Message> getUnprocessedMessages() {
+        return notificationService.getUnprocessedMessages();
+    }
+
 }

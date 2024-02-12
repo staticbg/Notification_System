@@ -1,10 +1,10 @@
 package com.notification.system.channel;
 
-import com.notification.system.model.Notification;
+import com.notification.system.model.Message;
 
 public interface Channel {
 
     String getName();
 
-    void sendNotification(Notification notification) throws Exception;
+    void sendNotification(Message message) throws Exception;
 }
