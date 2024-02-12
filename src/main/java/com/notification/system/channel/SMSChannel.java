@@ -1,3 +1,6 @@
+/**
+ * Email notification channel implementation
+ */
 package com.notification.system.channel;
 
 import com.notification.system.model.Message;
@@ -23,6 +26,9 @@ import java.io.IOException;
 public class SMSChannel implements Channel {
     private final String name = "SMS";
 
+    /**
+     * Method which sends notification via the SMS channel
+     */
     @Override
     public void sendNotification(Message message) throws Exception {
         // The code is written to use against the smpp.org SMSC simulator

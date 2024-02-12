@@ -1,3 +1,6 @@
+/**
+ * Email notification channel implementation
+ */
 package com.notification.system.channel;
 
 import com.notification.system.model.Message;
@@ -17,6 +20,9 @@ public class EmailChannel implements Channel {
     private final MailSenderService mailSenderService;
 
 
+    /**
+     * Method which sends notification via the Email channel
+     */
     @Override
     public void sendNotification(Message message) throws Exception {
         SimpleMailMessage emailMessage = new SimpleMailMessage();

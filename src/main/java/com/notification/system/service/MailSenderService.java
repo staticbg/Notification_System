@@ -1,3 +1,7 @@
+/**
+ * Service responsible for the sending of emails
+ */
+
 package com.notification.system.service;
 
 import java.util.Properties;
@@ -24,6 +28,9 @@ public class MailSenderService {
         props.put("mail.smtp.starttls.enable","true");
     }
 
+    /**
+     * Sends an email message
+     */
     public void send(SimpleMailMessage message) {
         mailSender.send(message);
     }

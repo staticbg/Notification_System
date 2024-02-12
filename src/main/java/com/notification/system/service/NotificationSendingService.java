@@ -1,3 +1,7 @@
+/**
+ * Service responsible for the sending of notifications
+ */
+
 package com.notification.system.service;
 
 
@@ -37,6 +41,9 @@ public class NotificationSendingService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
+    /**
+     * Sends notification message by the message id
+     */
     public void sendMessage(UUID messageId) {
         Optional<Message> messageResult = persistenceService.getMessageById(messageId);
         if (messageResult.isEmpty()) {
@@ -54,6 +61,9 @@ public class NotificationSendingService {
         }
     }
 
+    /**
+     * Sends messages to the Kafka topic for all unprocessed Message entities
+     */
     public void triggerNotificationSending() {
         List<Message> messages = persistenceService.getUnprocessedMessages();
         for (Message message: messages) {
@@ -61,6 +71,9 @@ public class NotificationSendingService {
         }
     }
 
+    /**
+     * Sends message to the Kafka topic with the message id of an unprocessed Message entity
+     */
     public void sendKafkaMessage(UUID messageId) {
         kafkaTemplate.send(Constants.TRIGGER_NOTIFICATION_SENDING_KAFKA_TOPIC, messageId);
     }

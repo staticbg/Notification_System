@@ -1,3 +1,7 @@
+/**
+ * Repository for persistence of Notification entities
+ */
+
 package com.notification.system.persistence;
 
 import com.notification.system.model.Notification;

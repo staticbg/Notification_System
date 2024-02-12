@@ -1,3 +1,7 @@
+/**
+ * Repository for persistence of Message entities
+ */
+
 package com.notification.system.persistence;
 
 import com.notification.system.model.Message;

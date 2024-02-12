@@ -1,3 +1,7 @@
+/**
+ * Create notification request REST body with validation of parameters
+ */
+
 package com.notification.system.model;
 
 import jakarta.validation.constraints.NotBlank;

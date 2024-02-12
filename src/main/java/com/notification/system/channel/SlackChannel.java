@@ -1,3 +1,6 @@
+/**
+ * Email notification channel implementation
+ */
 package com.notification.system.channel;
 
 import com.github.seratch.jslack.Slack;
@@ -12,6 +15,9 @@ import org.springframework.stereotype.Service;
 public class SlackChannel implements Channel {
     private final String name = "SLACK";
 
+    /**
+     * Method which sends notification via the Slack channel
+     */
     @Override
     public void sendNotification(Message message) throws Exception {
         Payload payload = Payload.builder()

@@ -1,3 +1,7 @@
+/**
+ * Service responsible for Notification operations
+ */
+
 package com.notification.system.service;
 
 
@@ -21,7 +25,10 @@ public class NotificationService {
 
     private final PersistenceService persistenceService;
 
-    public void sendNotification(NotificationRequest notificationRequest) {
+    /**
+     * Creates Notification entity and saves it to DB for future processing
+     */
+    public void createNotification(NotificationRequest notificationRequest) {
         // Validation that notificationChannel exists is done in the NotificationController
         // thus here should be guaranteed that the notificationChannel exists
         List<Message> messages = new ArrayList<>();
@@ -40,10 +47,16 @@ public class NotificationService {
         persistenceService.save(notification);
     }
 
+    /**
+     * Returns all messages for a notification by notification id
+     */
     public List<Message> getMessagesForNotification(UUID notificationId) {
         return persistenceService.getMessagesForNotification(notificationId);
     }
 
+    /**
+     * Returns all unprocessed messages (status != SENT)
+     */
     public List<Message> getUnprocessedMessages() {
         return persistenceService.getUnprocessedMessages();
     }

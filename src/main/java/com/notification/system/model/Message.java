@@ -1,3 +1,7 @@
+/**
+ * Notification Message
+ */
+
 package com.notification.system.model;
 
 

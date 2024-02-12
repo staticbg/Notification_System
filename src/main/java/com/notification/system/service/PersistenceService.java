@@ -1,3 +1,7 @@
+/**
+ * Service responsible for the Message and Notification entities persistence
+ */
+
 package com.notification.system.service;
 
 
@@ -26,41 +30,45 @@ public class PersistenceService {
     private final NotificationRepository notificationRepository;
     private final MessageRepository messageRepository;
 
+    /**
+     * Saves Notification entity
+     * @param notification
+     */
     public void save(Notification notification) {
         notificationRepository.save(notification);
     }
 
-    public Notification getNotification(UUID id) {
-        return notificationRepository.getReferenceById(id);
+    /**
+     * Saves Message entity
+     * @param message
+     */
+    public void save(Message message) {
+        messageRepository.save(message);
     }
 
+    /**
+     * Returns all unprocessed Message entities (with status != SENT)
+     */
     public List<Message> getUnprocessedMessages() {
         Specification<Message> specification = (root, query, cb) ->
                 cb.notEqual(root.<MessageStatus>get("status"), MessageStatus.SENT);
         return messageRepository.findAll(specification);
     }
 
+    /**
+     * Returns all messages for a specific notification by notification id
+     */
     public List<Message> getMessagesForNotification(UUID notificationId) {
         Specification<Message> specification = (root, query, cb) ->
                 cb.equal(root.<UUID>get("notification"), notificationId);
         return messageRepository.findAll(specification);
     }
 
+    /**
+     * Returns message by message id
+     */
     public Optional<Message> getMessageById(UUID messageId) {
         return messageRepository.findById(messageId);
-    }
-
-    public List<Message> getMessagesByIds(List<UUID> messageIds) {
-        Specification<Message> specification = (root, query, builder) -> {
-            final Path<UUID> group = root.get("id");
-            return group.in(messageIds);
-        };
-
-        return messageRepository.findAll(specification);
-    }
-
-    public void save(Message message) {
-        messageRepository.save(message);
     }
 
 }

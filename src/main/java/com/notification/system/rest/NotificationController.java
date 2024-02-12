@@ -1,3 +1,7 @@
+/**
+ * REST controller for Notification creation and other endpoints
+ */
+
 package com.notification.system.rest;
 
 import com.notification.system.model.Message;
@@ -46,7 +50,7 @@ public class NotificationController {
         }
 
         try {
-            notificationService.sendNotification(notificationRequest);
+            notificationService.createNotification(notificationRequest);
         } catch (Exception e) {
             return new ResponseEntity<>(Map.of(
                     Constants.INTERNAL_SERVER_ERROR_RESPONSE_KEY, List.of(e.getMessage())
