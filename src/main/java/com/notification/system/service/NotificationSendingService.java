@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +45,12 @@ public class NotificationSendingService {
         Message message = messageResult.get();
         try {
             notificationChannels.get(message.getChannel()).sendNotification(message);
-            persistenceService.updateMessageStatus(message, MessageStatus.SENT);
+            message.setStatus(MessageStatus.SENT);
+            message.setSentTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
+            persistenceService.save(message);
         } catch (Exception e) {
-            persistenceService.updateMessageStatus(message, MessageStatus.FAILED);
+            message.setStatus(MessageStatus.FAILED);
+            persistenceService.save(message);
         }
     }
 

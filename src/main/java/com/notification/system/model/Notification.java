@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class Notification {
     @Id
     @GeneratedValue
     private UUID id;
+    private Timestamp createdTimestamp;
     @OneToMany(cascade = {CascadeType.ALL})
     @JoinColumn(name = "notification")
     private List<Message> messages;

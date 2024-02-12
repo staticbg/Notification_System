@@ -59,8 +59,7 @@ public class PersistenceService {
         return messageRepository.findAll(specification);
     }
 
-    public void updateMessageStatus(Message message, MessageStatus messageStatus) {
-        message.setStatus(messageStatus);
+    public void save(Message message) {
         messageRepository.save(message);
     }
 

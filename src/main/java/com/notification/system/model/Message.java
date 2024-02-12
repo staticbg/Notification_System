@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -20,4 +21,5 @@ public class Message {
     private String content;
     private String channel;
     private MessageStatus status;
+    private Timestamp sentTimestamp;
 }

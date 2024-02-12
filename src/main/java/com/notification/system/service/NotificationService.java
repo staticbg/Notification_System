@@ -8,7 +8,9 @@ import com.notification.system.model.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +35,7 @@ public class NotificationService {
             messages.add(message);
         }
         Notification notification = new Notification();
+        notification.setCreatedTimestamp(new Timestamp(Calendar.getInstance().getTime().getTime()));
         notification.setMessages(messages);
         persistenceService.save(notification);
     }
