@@ -63,6 +63,9 @@ should not be hardcoded as in the current implementation. They could be in S3 bu
 loaded on application start as k8s environment variables.
 * Similarly, the configurations for each external system should not be hardcoded. They could be added
 to the application.properties file. Additionally, the DB will not be a local file DB system.
+* Docker can be used to containerize the application locally and to set dependencies (i.e. the DB
+and Kafka can be docker containers on which the notification sending system depends)
+* Unit, functional and integration testing should be implemented. This was skipped due to the time constraints of the task.
 
 The system is designed to be run in kubernetes with multiple pods and a kubernetes
 cronjob for triggering the sending of notifications.
@@ -84,10 +87,57 @@ The Notification Sending System currently supports SMS, Email and Slack channels
 It is designed to be easily extensible in the future. To add a new channel, the
 Channel interface needs to be implemented.
 
-TODO:
-1. How it might work in PROD
-2. Explain horizontal scalability
-3. REST API for creating notifications and checking status
-   * describe the endpoints
-4. Explain Message and Notification data redundancy in DB
-   * message contains the exact content the user received. Currently this is redundant with the content in the Notification object. In a productive system it is possible to have details like placeholders in the notification content which could be different for each user. For audit purposes it is better to have the exact message for each user instead of the one with the placeholders
+<h2>Running the Notification Sending System in Production</h2>
+The system is designed to run in kubernetes. Depending on the load, it can be scaled horizontally
+by increasing the amount of pods.
+
+The actual sending of notifications will be triggered by a simple bash script which calls the trigger
+notification sending REST API endpoint of the Notification Sending System. This script will be
+scheduled as kubernetes cronjob so that it runs as one instance and avoids message duplication.
+
+It is possible in edge case scenario to have duplicate messages. This could happen if a pod is
+processing notifications very slowly and does not manage to finish the processing until the
+next run of the cronjob. In this case, the pod can eventually send the notification successfully but
+the cronjob would have already sent a processing message to the Kafka topic and another pod will
+process it again. There are multiple possibilities to handle this scenario. One is to retry each
+notification message with a 10 minute delay. In this case it is still possible to have duplication
+but the likelihood of this happening is significantly lower. Another option is to implement a shared
+cache between the pods where message ids of messages in process are stored. When a pod starts
+processing a message, it will first check if this message id is in the cache. If it is, it will not
+process the message a second time.
+
+Using Kafka with the same group id for each pod allows each message to be handled by a single pod.
+The notification messages details, including status are stored in the database, so it does not matter
+which pod handles the sending.
+
+The system would need most of the improvements mentioned before to be ready for production
+deployment. Authorization mechanism should also be implemented to avoid accidental or malicious
+notifications to recipients.
+
+<h2>Notification and Message entities content redundancy</h2>
+The Message entity contains the exact content the user received. With the current implementation this is redundant with the content in the Notification object.
+In a productive system it is possible to have details like placeholders in the notification content which could be different for each user.
+For audit purposes it is better to have the exact message for each user instead of the one with the placeholders.
+
+<h2>REST API endpoints</h2>
+The interface for the Notification Sending System is REST.
+The following endpoints are available:
+1. POST "/notification"
+   * Used to create a notification. This is the entry point for the users of the Notification Sending System.
+   * Example request body
+     <code> {
+         "channel": "SMS",
+         "subject": "Test Notification",
+         "content": "Test notification content",
+         "recipients": [
+             "+359888888193",
+             "+359999999204"
+         ]
+     } </code>
+2. GET "/messages/{notificationId}"
+   * Returns the notification message details for all messages of notification with the provided notification id
+3. GET "/messages/unprocessed"
+   * Returns all messages with status NEW or FAILED. Ignores SENT messages.
+4. POST "/triggerNotificationSending"
+   * Triggers the actual notification sending in the Notification Sending System. Usually called by the 
+   Trigger notification sending cronjob. Ideally would not be accessible from external networks.
