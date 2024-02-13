@@ -43,28 +43,28 @@ instances of the Notification Sending System can handle them.
 <h3>Improvement points for notification sending</h3>
 The notification sending mechanism could be improved with the following points:<br>
 * Make the message sending retryable. I.e. retrying 3 times before updating the message as failed
-could help with sporadic issues
+could help with sporadic issues<br>
 * Current implementation will retry notification sending forever. A limitation should be
 introduced, i.e. try 1000 times or try for 3 days. Otherwise, some unprocessable notifications
-will keep loading the system forever.
+will keep loading the system forever.<br>
 * The trigger notification sending currently gets all unprocessed messages. Introducing
 chunks could help if there are huge loads on the system. I.e. get only the oldest 1000 or 10000
 messages instead of all of them. This may, however, slow notification sending as it would limit
-the notification sending to no more than 1000 or 10000 per minute (if the cronjob runs every minute)
+the notification sending to no more than 1000 or 10000 per minute (if the cronjob runs every minute)<br>
 * Introducing a REST API endpoint for manually retriggering a failed notification could
 help when unexpected issues arise. This would only make sense if a limitation the
 times a notification is retried is introduced. Otherwise, the notification will be retried automatically.
 
 <h3>Other future improvement points</h3>
 * Logging currently does not write to a file. This should be changed as in production this will be
-the best way to debug when there are unexpected issues.
+the best way to debug when there are unexpected issues.<br>
 * In a production system, the credentials for each external system (i.e. the SMTP server, the DB server, etc)
 should not be hardcoded as in the current implementation. They could be in S3 bucket or something similar and
-loaded on application start as k8s environment variables.
+loaded on application start as k8s environment variables.<br>
 * Similarly, the configurations for each external system should not be hardcoded. They could be added
-to the application.properties file. Additionally, the DB will not be a local file DB system.
+to the application.properties file. Additionally, the DB will not be a local file DB system.<br>
 * Docker can be used to containerize the application locally and to set dependencies (i.e. the DB
-and Kafka can be docker containers on which the notification sending system depends)
+and Kafka can be docker containers on which the notification sending system depends)<br>
 * Unit, functional and integration testing should be implemented. This was skipped due to the time constraints of the task.
 
 The system is designed to be run in kubernetes with multiple pods and a kubernetes
@@ -121,10 +121,10 @@ For audit purposes it is better to have the exact message for each user instead 
 
 <h2>REST API endpoints</h2>
 The interface for the Notification Sending System is REST.
-The following endpoints are available:
-1. POST "/notification"
-   * Used to create a notification. This is the entry point for the users of the Notification Sending System.
-   * Example request body
+The following endpoints are available:<br>
+1. POST "/notification"<br>
+   * Used to create a notification. This is the entry point for the users of the Notification Sending System.<br>
+   * Example request body<br>
      <code> {
          "channel": "SMS",
          "subject": "Test Notification",
@@ -133,11 +133,11 @@ The following endpoints are available:
              "+359888888193",
              "+359999999204"
          ]
-     } </code>
-2. GET "/messages/{notificationId}"
-   * Returns the notification message details for all messages of notification with the provided notification id
-3. GET "/messages/unprocessed"
-   * Returns all messages with status NEW or FAILED. Ignores SENT messages.
-4. POST "/triggerNotificationSending"
+     } </code><br>
+2. GET "/messages/{notificationId}"<br>
+   * Returns the notification message details for all messages of notification with the provided notification id<br>
+3. GET "/messages/unprocessed"<br>
+   * Returns all messages with status NEW or FAILED. Ignores SENT messages.<br>
+4. POST "/triggerNotificationSending"<br>
    * Triggers the actual notification sending in the Notification Sending System. Usually called by the 
    Trigger notification sending cronjob. Ideally would not be accessible from external networks.
